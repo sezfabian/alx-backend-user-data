@@ -22,16 +22,17 @@ if os.getenv("AUTH_TYPE") == "auth":
 
 @app.before_request
 def before_request(request):
-    """Before request handler
+    """Validates if API request requires authentication
     """
-    if auth is not None:
-        excluded_paths = ['/api/v1/status', '/api/v1/unauthorized',
-                          '/api/v1/forbidden']
+    if auth:
+        excluded_paths = ['/api/v1/status/', '/api/v1/unauthorized/',
+                          '/api/v1/forbidden/']
         if auth.require_auth(request.path, excluded_paths):
             if auth.authorization_header(request) is None:
                 abort(401)
             elif auth.current_user(request) is None:
                 abort(403)
+
 
 @app.errorhandler(404)
 def not_found(error) -> str:

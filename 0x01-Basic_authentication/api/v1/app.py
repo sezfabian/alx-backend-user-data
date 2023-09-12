@@ -21,7 +21,7 @@ if os.getenv("AUTH_TYPE") == "auth":
 
 
 @app.before_request
-def before_request(request):
+def before_request():
     """Validates if API request requires authentication
     """
     if auth:

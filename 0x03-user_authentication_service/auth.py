@@ -3,6 +3,7 @@
 """
 import bcrypt
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 from db import DB
 from user import User
 
@@ -31,3 +32,19 @@ class Auth:
             hashed_password = _hash_password(password)
 
             return self._db.add_user(email, hashed_password)
+
+    def valid_login(self, email: str, password: str) -> bool:
+        """
+        Try locating the user by email.
+        If it exists, check the password with bcrypt.checkpw.
+        If it matches return True.
+        In any other case, return False.
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+            if bcrypt.checkpw(password.encode(), user.hashed_password):
+                return True
+        except (NoResultFound, InvalidRequestError):
+            return False
+
+        return False
